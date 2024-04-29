@@ -1,0 +1,92 @@
+body {
+    background-color: #87CEEB; /* Sky blue */
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scene {
+    position: relative; /* For positioning the elements within */
+}
+
+.island {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%); 
+    width: 200px;
+    height: 100px;
+    background-color: #804000; /* Brown */
+    border-top-left-radius: 80px;
+    border-top-right-radius: 80px; 
+}
+
+.tree { /* You'd visually create a tree shape here */
+    /* ...Tree CSS... */
+}
+
+.house { /* You'd create a cute little house here */
+    /* ...House CSS... */
+}
+
+
+.cloud {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: float 15s linear infinite;
+}
+
+.cloud {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: float 15s linear infinite; /* Base animation for all clouds */
+}
+
+.cloud-1 { 
+    top: 50px;
+    left: 30px;
+    width: 60px;
+    height: 30px; 
+    opacity: 0.8; /* Slightly transparent */
+}
+
+.cloud-2 {
+    top: 150px;
+    left: 200px;
+    width: 100px;
+    height: 50px;
+    opacity: 0.6;  /* More transparent */
+    animation-duration: 12s;  /* Slower drift */
+}
+
+.cloud-3 {
+    top: 80px;
+    left: 350px;
+    width: 80px;
+    height: 40px;
+    animation-duration: 18s; /* Even slower */
+}
+
+.sea {
+    position: absolute;
+    bottom: -50px; /* Extend below the viewport */
+    width: 100%;
+    height: 100px;
+    background-color: #00BFFF; /* Deep blue */
+}
+
+@keyframes float {
+    0% { left: -100px; }
+    100% { left: 110%; } /* Go off screen */
+}
+
+.tree polygon { /* Styles the tree's leaves */
+    fill: darkgreen;
+}
+.house rect { /* Styles the house's body */
+    fill: #000;
+}
