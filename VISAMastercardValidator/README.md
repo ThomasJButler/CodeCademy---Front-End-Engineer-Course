@@ -59,3 +59,6 @@ Try these numbers:
 
 ## 📝 Notes
 Built this as part of my CodeCademy Full Stack Engineer course. It's a proper demonstration of DOM manipulation, form handling, and some clever algorithm implementation - all without the help of frameworks. Quite chuffed with how it turned out!
+
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Feel free to use it as you wish!
