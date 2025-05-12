@@ -2,6 +2,15 @@
 
 A terminal-style interface for analysing the DNA of P. aequor, a mysterious deep-sea organism discovered near hydrothermal vents.
 
+*This project was completed as part of the Codecademy Full Stack Career Path.*
+
+---
+
+![Screenshot: Full Terminal View](./src/images/fullview.png)
+*The full terminal interface in action – minimalist, sci-fi, and all in your browser console!*
+
+---
+
 ## 🔬 Project Overview
 
 This simulation tool helps researchers study P. aequor by:
@@ -11,6 +20,13 @@ This simulation tool helps researchers study P. aequor by:
 - Generating complementary DNA strands
 - Simulating DNA mutations
 
+---
+
+![Screenshot: DNA Simulation Results](./src/images/coderesults.png)
+*Sample output showing DNA strands, survival status, and lab commentary – all in a friendly, readable format.*
+
+---
+
 ## 🚀 Quick Start
 
 1. Open `index.html` in a modern web browser
@@ -18,17 +34,43 @@ This simulation tool helps researchers study P. aequor by:
 3. Select the Console tab
 4. Watch the simulation run automatically!
 
+---
+
+![Screenshot: Landing Prompt](./src/images/landing.png)
+*Landing prompt – just open your console to get started!*
+
+---
+
 ## 💻 Technical Details
 
 ### Project Structure
 ```
 deepcode-terminal/
 ├── index.html          # Entry point
-├── style.css          # Terminal styling
-├── script.js          # Simulation runner
 ├── src/
-│   └── pAequorFactory.js  # DNA logic
+│   ├── css/
+│   │   └── style.css     # Terminal styling
+│   ├── js/
+│   │   ├── script.js     # Simulation controller
+│   │   └── pAequorFactory.js  # DNA logic
+│   └── images/
+│       ├── fullview.png   # Screenshots
+│       ├── coderesults.png
+│       └── landing.png
+├── LICENSE             # MIT License
+├── USER_GUIDE.md      # Lab-style guide
+└── README.md          # Technical guide
 ```
+
+---
+
+## 📄 License
+
+MIT License
+Copyright (c) 2025 Tom Butler
+This project is part of the Codecademy Full Stack Career Path.
+
+---
 
 ### Core Functions
 
@@ -80,4 +122,6 @@ The project uses a minimalist terminal aesthetic with:
 
 ## 📜 License
 
+MIT License
+Copyright (c) 2025 Tom Butler
 This project is part of the Codecademy Front-End Engineer course.
