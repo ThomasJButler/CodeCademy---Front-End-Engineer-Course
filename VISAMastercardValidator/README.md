@@ -6,15 +6,15 @@ A nifty little web app I built as part of the CodeCademy Full Stack Engineer cou
 ## 📸 Screenshots
 
 ### Landing Page
-![Landing Page](./screenshots/landing.png)
+![Landing Page](<img width="984" alt="image" src="https://github.com/user-attachments/assets/f049c8a0-400c-4c07-b6a1-95fb534b4459" />)
 *The main interface - clean and straightforward*
 
 ### Validation Success
-![Validation Success](./screenshots/success.png)
+![Validation Success](<img width="984" alt="image" src="https://github.com/user-attachments/assets/88e71c3c-d0fd-4b8c-b769-f60c37d6ec7b" />)
 *When everything's spot on*
 
 ### Validation Error
-![Validation Error](./screenshots/error.png)
+![Validation Error](<img width="785" alt="image" src="https://github.com/user-attachments/assets/15d3e3b3-bb2f-421c-9e5a-e8e220897a08" />)
 *When something's not quite right*
 
 ## 🛠️ Tech Stack
