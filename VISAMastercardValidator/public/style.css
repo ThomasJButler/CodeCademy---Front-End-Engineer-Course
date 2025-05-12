@@ -1,0 +1,209 @@
+:root {
+  --primary-color: #6366f1;
+  --success-color: #22c55e;
+  --error-color: #ef4444;
+  --visa-color: #1434cb;
+  --mastercard-color: #eb001b;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  min-height: 100vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 440px;
+  padding: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+h1 {
+  color: #1f2937;
+  font-size: 1.5rem;
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+input[type="password"] {
+  -webkit-text-security: disc;
+  text-security: disc;
+}
+
+input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.toggle-visibility {
+  position: absolute;
+  right: 0.5rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: auto;
+}
+
+.toggle-visibility:hover {
+  color: #4f46e5;
+  transform: none;
+}
+
+.toggle-visibility:focus {
+  outline: 2px solid var(--primary-color);
+  border-radius: 4px;
+}
+
+.validate-button {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 1rem;
+}
+
+.validate-button:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.validate-button:active {
+  transform: translateY(0);
+}
+
+.validate-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+.hint-text {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* High contrast mode support */
+@media (forced-colors: active) {
+  .validate-button {
+    border: 2px solid currentColor;
+  }
+  
+  .toggle-visibility {
+    border: 1px solid currentColor;
+  }
+}
+
+.result {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.result.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.result.valid {
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success-color);
+}
+
+.result.invalid {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error-color);
+}
+
+.supported-cards {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.supported-cards p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+}
+
+.card-types {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.card-type {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.visa {
+  background: rgba(20, 52, 203, 0.1);
+  color: var(--visa-color);
+}
+
+.mastercard {
+  background: rgba(235, 0, 27, 0.1);
+  color: var(--mastercard-color);
+}
+
