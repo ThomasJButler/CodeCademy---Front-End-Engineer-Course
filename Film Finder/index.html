@@ -17,6 +17,23 @@
     </header>
 
     <main>
+        <!-- Filter Section -->
+        <section id="filterSelection" class="filter-container">
+            <h2>Filter Content</h2>
+            <div class="filter-group">
+                <label for="genres">Genre:</label>
+                <select id="genres" name="genres">
+                    <option value="" selected>All Genres</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="minRating">Min. Rating:</label>
+                <input type="range" id="minRating" name="minRating" min="0" max="10" step="0.5" value="0">
+                <span id="minRatingValue">0.0</span>
+            </div>
+            <button id="applyFiltersBtn">Apply Filters</button>
+        </section>
+
         <!-- Movie Display Section -->
         <section id="movieInfo" class="movie-container hidden">
             <!-- Movie poster -->
