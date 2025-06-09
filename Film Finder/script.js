@@ -31,7 +31,7 @@ const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 const filterSelection = document.getElementById('filterSelection');
 
 // ========== STATE MANAGEMENT ==========
-let trendingContent = []; // Will hold either movies or TV shows
+let currentContentList = []; // The list of content currently being displayed/cycled through
 let currentContentIndex = 0;
 let likedMovies = [];
 let likedTvShows = [];
@@ -52,11 +52,11 @@ const getGenres = async (type) => {
         } else {
             console.error(`Failed to fetch ${type} genres. Status:`, response.status);
             console.error('Response:', await response.text());
-            return []; // Return empty array on failure
+            return [];
         }
     } catch (error) {
         console.error(`Error fetching ${type} genres:`, error);
-        return []; // Return empty array on error
+        return [];
     }
 };
 
@@ -83,6 +83,27 @@ const getMovieTrailer = async (contentId, type) => {
     }
 };
 
+const getTrendingContent = async (type) => {
+    const trendingEndpoint = `/trending/${type}/week`;
+    const requestParams = `?api_key=${tmdbKey}`;
+    const urlToFetch = `${tmdbBaseUrl}${trendingEndpoint}${requestParams}`;
+
+    try {
+        const response = await fetch(urlToFetch);
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            return jsonResponse.results;
+        } else {
+            console.error(`Failed to fetch trending ${type} content. Status:`, response.status);
+            console.error('Response:', await response.text());
+            return [];
+        }
+    } catch (error) {
+        console.error(`Error fetching trending ${type} content:`, error);
+        return [];
+    }
+};
+
 const getFilteredContent = async (type, genreId, minRating) => {
     let endpoint = `/discover/${type}`;
     let requestParams = `?api_key=${tmdbKey}&vote_count.gte=100`; // Ensure a minimum number of votes for reliable ratings
@@ -94,8 +115,7 @@ const getFilteredContent = async (type, genreId, minRating) => {
         requestParams += `&vote_average.gte=${minRating}`;
     }
     
-    // Add sorting for better randomization with filters
-    requestParams += `&sort_by=popularity.desc`; // Start with popular, then randomize client-side
+    requestParams += `&sort_by=popularity.desc`; // Sort by popularity to get a good initial set
 
     const urlToFetch = `${tmdbBaseUrl}${endpoint}${requestParams}`;
 
@@ -132,10 +152,10 @@ const displayContent = (contentData) => {
 };
 
 const showNextContent = () => {
-    if (trendingContent.length > 0) {
-        const randomIndex = Math.floor(Math.random() * trendingContent.length); // Randomize
+    if (currentContentList.length > 0) {
+        const randomIndex = Math.floor(Math.random() * currentContentList.length); // Randomize
         currentContentIndex = randomIndex;
-        const content = trendingContent[currentContentIndex];
+        const content = currentContentList[currentContentIndex];
         displayContent(content);
     } else {
         movieInfo.classList.add('hidden');
@@ -170,7 +190,7 @@ const populateGenreDropdown = (genres) => {
 };
 
 // ========== INITIALISATION & EVENT HANDLERS ==========
-const loadContent = async (type) => {
+const initializeContent = async (type) => {
     currentContentType = type;
 
     // Fetch and populate genres for the current type
@@ -180,23 +200,18 @@ const loadContent = async (type) => {
         populateGenreDropdown(genres);
     }
 
-    // Apply current filters
-    const selectedGenreId = genreSelectElement.value;
-    const minRating = parseFloat(minRatingInput.value);
-
-    trendingContent = await getFilteredContent(type, selectedGenreId, minRating);
+    // Initially load trending content without filters
+    currentContentList = await getTrendingContent(type);
     
-    // Randomize the initial display
-    if (trendingContent.length > 0) {
-        currentContentIndex = Math.floor(Math.random() * trendingContent.length);
-        displayContent(trendingContent[currentContentIndex]);
+    if (currentContentList.length > 0) {
+        showNextContent(); // Display a random item from the initial trending list
         movieInfo.classList.remove('hidden');
         filterSelection.classList.remove('hidden'); // Ensure filter section is visible
-        console.log(`App ready! Showing trending ${type}s.`);
+        console.log(`BingeBuddy ready! Showing trending ${type}s.`);
     } else {
-        movieInfo.classList.add('hidden'); // Hide movie info if no content
-        console.error(`Failed to load trending ${type}s or no content found with current filters`);
-        alert(`Failed to load trending ${type}s or no content found with current filters. Please check your internet connection or adjust filters.`);
+        movieInfo.classList.add('hidden');
+        console.error(`Failed to load trending ${type}s.`);
+        alert(`Failed to load trending ${type}s. Please check your internet connection.`);
     }
 
     // Update liked lists visibility
@@ -217,7 +232,7 @@ const loadContent = async (type) => {
 
 // Event Listeners
 likeBtn.addEventListener('click', () => {
-    const content = trendingContent[currentContentIndex];
+    const content = currentContentList[currentContentIndex];
     if (currentContentType === 'movie') {
         if (!likedMovies.find(likedItem => likedItem.id === content.id)) {
             likedMovies.push(content);
@@ -235,7 +250,7 @@ likeBtn.addEventListener('click', () => {
 dislikeBtn.addEventListener('click', showNextContent);
 
 trailerBtn.addEventListener('click', async () => {
-    const content = trendingContent[currentContentIndex];
+    const content = currentContentList[currentContentIndex];
     const trailerUrl = await getMovieTrailer(content.id, currentContentType);
     if (trailerUrl) {
         trailerIframe.src = trailerUrl;
@@ -261,14 +276,25 @@ minRatingInput.addEventListener('input', () => {
     minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1);
 });
 
-applyFiltersBtn.addEventListener('click', () => {
-    loadContent(currentContentType); // Reload content with new filters
+applyFiltersBtn.addEventListener('click', async () => {
+    const selectedGenreId = genreSelectElement.value;
+    const minRating = parseFloat(minRatingInput.value);
+    
+    currentContentList = await getFilteredContent(currentContentType, selectedGenreId, minRating);
+    
+    if (currentContentList.length > 0) {
+        showNextContent(); // Display a random item from the filtered list
+    } else {
+        movieInfo.classList.add('hidden');
+        alert('No content found with the selected filters. Please adjust your selections.');
+    }
 });
 
-moviesBtn.addEventListener('click', () => loadContent('movie'));
-tvShowsBtn.addEventListener('click', () => loadContent('tv'));
+moviesBtn.addEventListener('click', () => initializeContent('movie'));
+tvShowsBtn.addEventListener('click', () => initializeContent('tv'));
 
-// Initial load
-console.log('Initialising BingeBuddy...');
-minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1); // Set initial rating display
-loadContent('movie'); // Load movies by default
+// Initial load when the DOM is ready
+window.addEventListener('DOMContentLoaded', async () => {
+    minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1); // Set initial rating display
+    await initializeContent('movie'); // Load movies by default
+});
