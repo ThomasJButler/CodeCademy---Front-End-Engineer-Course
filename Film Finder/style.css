@@ -148,7 +148,7 @@ main {
     flex: 1;
     padding: 2rem;
     display: flex;
-    flex-direction: column; /* Allow stacking of filter and movie sections */
+    flex-direction: column; /* Default to column for mobile */
     justify-content: center;
     align-items: center;
 }
@@ -547,45 +547,103 @@ footer a {
 /* Desktop specific adjustments for single screen view */
 @media (min-width: 769px) {
     main {
-        padding: 1.5rem; /* Slightly reduced padding for more space */
+        padding: 1.5rem;
+        /* For desktop, main will contain the grid layout */
+        display: block; /* Override flex for grid */
+        max-width: 1400px; /* Max width for the entire layout */
+        margin: 0 auto; /* Center the layout */
     }
 
-    .filter-container {
-        margin-bottom: 1.5rem; /* Reduced margin */
+    .desktop-layout-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr; /* Left, Middle, Right columns */
+        gap: 2rem; /* Gap between columns */
+        align-items: start; /* Align items to the start of their grid area */
+        height: calc(100vh - 150px); /* Adjust height to fit viewport, considering header/footer */
+    }
+
+    .left-column, .middle-column, .right-column {
+        height: 100%; /* Take full height of the grid row */
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem; /* Space between sections within columns */
+    }
+
+    .left-column {
+        overflow-y: auto; /* Enable scrolling for left column */
+        padding-right: 1rem; /* Padding for scrollbar */
+    }
+
+    .right-column {
+        overflow-y: auto; /* Enable scrolling for right column */
+        padding-left: 1rem; /* Padding for scrollbar */
+        background-color: var(--card-bg-color); /* Background for the feed */
+        border-radius: 10px;
+        box-shadow: 0 4px 20px var(--card-shadow-color);
+        padding: 1.5rem;
+    }
+
+    .right-column h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+        text-align: center;
+    }
+
+    .trending-feed-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .feed-item {
+        background-color: var(--liked-item-bg-color);
+        padding: 0.8rem;
+        border-radius: 5px;
+        color: var(--secondary-text-color);
+    }
+
+    /* Adjustments for sections within columns */
+    .filter-container, .liked-movies-container {
+        margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+        width: auto; /* Let grid handle width */
+        max-width: none; /* Remove max-width constraint */
     }
 
     .movie-container {
-        gap: 1.5rem; /* Reduced gap */
-        padding: 1.5rem; /* Reduced padding */
+        gap: 1.5rem;
+        padding: 1.5rem;
+        height: 100%; /* Ensure movie container takes full height */
+        justify-content: center; /* Center content vertically */
     }
 
     .movie-poster {
-        width: 250px; /* Slightly smaller poster */
-        height: 375px; /* Maintain aspect ratio */
+        width: 250px;
+        height: 375px;
     }
 
     .movie-title {
-        font-size: 2rem; /* Slightly smaller title */
+        font-size: 2rem;
     }
 
     .movie-meta {
-        font-size: 0.9rem; /* Slightly smaller meta font */
+        font-size: 0.9rem;
         margin-bottom: 1rem;
     }
 
     .movie-overview {
-        font-size: 1rem; /* Slightly smaller overview font */
+        font-size: 1rem;
         line-height: 1.6;
-        max-height: 180px; /* Significantly reduced max height for overview */
-        margin-bottom: 1.5rem; /* Reduced margin */
+        max-height: 180px; /* Adjusted for single screen view */
+        margin-bottom: 1.5rem;
     }
 
     .button-container {
-        gap: 0.8rem; /* Reduced gap */
+        gap: 0.8rem;
     }
 
     .action-btn {
-        padding: 0.8rem; /* Reduced padding */
-        font-size: 1rem; /* Reduced font size */
+        padding: 0.8rem;
+        font-size: 1rem;
     }
 }

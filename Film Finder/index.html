@@ -20,51 +20,100 @@
     </header>
 
     <main>
-        <!-- Filter Section -->
-        <section id="filterSelection" class="filter-container">
-            <h2>Filter Content</h2>
-            <div class="filter-group">
-                <label for="genres">Genre:</label>
-                <select id="genres" name="genres">
-                    <option value="" selected>All Genres</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="minRating">Min. Rating:</label>
-                <input type="range" id="minRating" name="minRating" min="0" max="10" step="0.5" value="0">
-                <span id="minRatingValue">0.0</span>
-            </div>
-            <button id="applyFiltersBtn">Apply Filters</button>
-        </section>
+        <div class="desktop-layout-container">
+            <!-- Left Column: Filters and Liked Content -->
+            <div class="left-column">
+                <!-- Filter Section -->
+                <section id="filterSelection" class="filter-container">
+                    <h2>Filter Content</h2>
+                    <div class="filter-group">
+                        <label for="genres">Genre:</label>
+                        <select id="genres" name="genres">
+                            <option value="" selected>All Genres</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="minRating">Min. Rating:</label>
+                        <input type="range" id="minRating" name="minRating" min="0" max="10" step="0.5" value="0">
+                        <span id="minRatingValue">0.0</span>
+                    </div>
+                    <button id="applyFiltersBtn">Apply Filters</button>
+                </section>
 
-        <!-- Movie Display Section -->
-        <section id="movieInfo" class="movie-container hidden">
-            <!-- Movie poster -->
-            <div id="moviePoster" class="movie-poster"></div>
-            
-            <!-- Movie details -->
-            <div class="movie-details">
-                <h2 id="movieTitle" class="movie-title"></h2>
-                <div id="movieDetails" class="movie-meta">
-                    <span id="movieReleaseDate"></span>
-                    <span id="movieRating"></span>
-                </div>
-                <p id="movieOverview" class="movie-overview"></p>
-                
-                <!-- Like/Dislike buttons -->
-                <div class="button-container">
-                    <button id="trailerBtn" class="action-btn trailer-btn">
-                        <span class="emoji">▶️</span> Watch Trailer
-                    </button>
-                    <button id="likeBtn" class="action-btn like-btn">
-                        <span class="emoji">👍</span> Like
-                    </button>
-                    <button id="dislikeBtn" class="action-btn dislike-btn">
-                        <span class="emoji">👎</span> Dislike
-                    </button>
+                <section id="likedMovies" class="liked-movies-container">
+                    <h2>Liked Movies</h2>
+                    <ul id="likedMoviesList"></ul>
+                </section>
+
+                <section id="likedTvShows" class="liked-movies-container hidden">
+                    <h2>Liked TV Shows</h2>
+                    <ul id="likedTvShowsList"></ul>
+                </section>
+            </div>
+
+            <!-- Middle Column: Movie/TV Show Display -->
+            <div class="middle-column">
+                <!-- Movie Display Section -->
+                <section id="movieInfo" class="movie-container hidden">
+                    <!-- Movie poster -->
+                    <div id="moviePoster" class="movie-poster"></div>
+                    
+                    <!-- Movie details -->
+                    <div class="movie-details">
+                        <h2 id="movieTitle" class="movie-title"></h2>
+                        <div id="movieDetails" class="movie-meta">
+                            <span id="movieReleaseDate"></span>
+                            <span id="movieRating"></span>
+                        </div>
+                        <p id="movieOverview" class="movie-overview"></p>
+                        
+                        <!-- Like/Dislike buttons -->
+                        <div class="button-container">
+                            <button id="trailerBtn" class="action-btn trailer-btn">
+                                <span class="emoji">▶️</span> Watch Trailer
+                            </button>
+                            <button id="likeBtn" class="action-btn like-btn">
+                                <span class="emoji">👍</span> Like
+                            </button>
+                            <button id="dislikeBtn" class="action-btn dislike-btn">
+                                <span class="emoji">👎</span> Dislike
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Scrolling Feed (Placeholder) -->
+            <div class="right-column">
+                <h2>Trending Feed</h2>
+                <div id="trendingFeedList" class="trending-feed-list">
+                    <!-- Content will be dynamically loaded here -->
+                    <p>More trending content will appear here.</p>
+                    <p>Scroll down to see more!</p>
+                    <!-- Placeholder items -->
+                    <div class="feed-item">Item 1</div>
+                    <div class="feed-item">Item 2</div>
+                    <div class="feed-item">Item 3</div>
+                    <div class="feed-item">Item 4</div>
+                    <div class="feed-item">Item 5</div>
+                    <div class="feed-item">Item 6</div>
+                    <div class="feed-item">Item 7</div>
+                    <div class="feed-item">Item 8</div>
+                    <div class="feed-item">Item 9</div>
+                    <div class="feed-item">Item 10</div>
+                    <div class="feed-item">Item 11</div>
+                    <div class="feed-item">Item 12</div>
+                    <div class="feed-item">Item 13</div>
+                    <div class="feed-item">Item 14</div>
+                    <div class="feed-item">Item 15</div>
+                    <div class="feed-item">Item 16</div>
+                    <div class="feed-item">Item 17</div>
+                    <div class="feed-item">Item 18</div>
+                    <div class="feed-item">Item 19</div>
+                    <div class="feed-item">Item 20</div>
                 </div>
             </div>
-        </section>
+        </div>
 
         <!-- Trailer Modal -->
         <div id="trailerModal" class="modal hidden">
@@ -73,16 +122,6 @@
                 <iframe id="trailerIframe" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </div>
-
-        <section id="likedMovies" class="liked-movies-container">
-            <h2>Liked Movies</h2>
-            <ul id="likedMoviesList"></ul>
-        </section>
-
-        <section id="likedTvShows" class="liked-movies-container hidden">
-            <h2>Liked TV Shows</h2>
-            <ul id="likedTvShowsList"></ul>
-        </section>
     </main>
 
     <footer>

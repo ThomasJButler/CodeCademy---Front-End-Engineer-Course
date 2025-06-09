@@ -30,6 +30,7 @@ const minRatingValueSpan = document.getElementById('minRatingValue');
 const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 const filterSelection = document.getElementById('filterSelection');
 const themeToggleBtn = document.getElementById('themeToggle');
+const trendingFeedList = document.getElementById('trendingFeedList');
 
 // ========== STATE MANAGEMENT ==========
 let currentContentList = []; // The list of content currently being displayed/cycled through
@@ -81,6 +82,27 @@ const getMediaTrailer = async (contentId, type) => {
     } catch (error) {
         console.error('Error fetching movie trailer:', error);
         return '';
+    }
+};
+
+const getFeedContent = async (type, page = 1) => {
+    const trendingEndpoint = `/trending/${type}/week`;
+    const requestParams = `?api_key=${tmdbKey}&page=${page}`;
+    const urlToFetch = `${tmdbBaseUrl}${trendingEndpoint}${requestParams}`;
+
+    try {
+        const response = await fetch(urlToFetch);
+        if (response.ok) {
+            const jsonResponse = await response.json();
+            return jsonResponse.results;
+        } else {
+            console.error(`Failed to fetch trending ${type} feed content. Status:`, response.status);
+            console.error('Response:', await response.text());
+            return [];
+        }
+    } catch (error) {
+        console.error(`Error fetching trending ${type} feed content:`, error);
+        return [];
     }
 };
 
@@ -190,6 +212,23 @@ const populateGenreDropdown = (genres) => {
     });
 };
 
+const populateTrendingFeed = async (type) => {
+    trendingFeedList.innerHTML = '<h2>Trending Feed</h2>'; // Reset feed
+    const feedItems = await getFeedContent(type);
+    if (feedItems && feedItems.length > 0) {
+        feedItems.slice(0, 10).forEach(item => { // Display first 10 items
+            const div = document.createElement('div');
+            div.classList.add('feed-item');
+            div.textContent = item.title || item.name;
+            trendingFeedList.appendChild(div);
+        });
+    } else {
+        const p = document.createElement('p');
+        p.textContent = 'No trending feed available.';
+        trendingFeedList.appendChild(p);
+    }
+};
+
 // ========== INITIALISATION & EVENT HANDLERS ==========
 const initializeContent = async (type) => {
     currentContentType = type;
@@ -201,7 +240,7 @@ const initializeContent = async (type) => {
         populateGenreDropdown(genres);
     }
 
-    // Initially load trending content without filters
+    // Initially load trending content without filters for the main display
     currentContentList = await getTrendingContent(type);
     
     if (currentContentList.length > 0) {
@@ -229,6 +268,9 @@ const initializeContent = async (type) => {
     // Update active toggle button
     moviesBtn.classList.toggle('active', type === 'movie');
     tvShowsBtn.classList.toggle('active', type === 'tv');
+
+    // Populate the trending feed
+    populateTrendingFeed(type);
 };
 
 // Event Listeners
