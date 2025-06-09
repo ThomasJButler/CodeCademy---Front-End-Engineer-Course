@@ -48,6 +48,9 @@ const getGenres = async () => {
             
             // Task 12: Return the genres
             return genres;
+        } else {
+            console.error('Failed to fetch genres. Status:', response.status);
+            console.error('Response:', await response.text());
         }
     } catch (error) {
         // Task 7: Log any errors
@@ -152,21 +155,21 @@ const getRandomMovie = (movies) => {
 };
 
 // Display movie information on the page
-const displayMovie = (movieInfo) => {
+const displayMovie = (movieData) => {
     // Hide genre selection and show movie info
     genreSelection.classList.add('hidden');
     movieInfo.classList.remove('hidden');
     
     // Set movie poster
-    const posterPath = movieInfo.poster_path;
+    const posterPath = movieData.poster_path;
     const posterUrl = posterPath 
         ? `https://image.tmdb.org/t/p/w500${posterPath}`
         : 'https://via.placeholder.com/300x450?text=No+Poster';
     moviePoster.style.backgroundImage = `url(${posterUrl})`;
     
     // Set movie title and overview
-    movieTitle.textContent = movieInfo.title;
-    movieOverview.textContent = movieInfo.overview || 'No overview available.';
+    movieTitle.textContent = movieData.title;
+    movieOverview.textContent = movieData.overview || 'No overview available.';
 };
 
 // Clear the current movie from the screen
@@ -219,9 +222,14 @@ dislikeBtn.addEventListener('click', dislikeMovie);
 // ========== INITIALISATION ==========
 // When the page loads, fetch and populate genres
 window.addEventListener('DOMContentLoaded', async () => {
+    console.log('Initialising Film Finder...');
     const genres = await getGenres();
-    if (genres) {
+    if (genres && genres.length > 0) {
         populateGenreDropdown(genres);
         console.log('App ready! Select a genre and click "Let\'s Play!"');
+        console.log(`Loaded ${genres.length} genres:`, genres.map(g => g.name).join(', '));
+    } else {
+        console.error('Failed to load genres');
+        alert('Failed to load movie genres. Please check your internet connection and refresh the page.');
     }
 });
