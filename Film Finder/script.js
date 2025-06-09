@@ -119,13 +119,13 @@ likeBtn.addEventListener('click', () => {
 dislikeBtn.addEventListener('click', showNextContent);
 
 trailerBtn.addEventListener('click', async () => {
-    const movie = trendingMovies[currentMovieIndex];
-    const trailerUrl = await getMovieTrailer(movie.id);
+    const content = trendingContent[currentContentIndex];
+    const trailerUrl = await getMovieTrailer(content.id);
     if (trailerUrl) {
         trailerIframe.src = trailerUrl;
         trailerModal.classList.remove('hidden');
     } else {
-        alert('No trailer available for this movie.');
+        alert('No trailer available for this content.');
     }
 });
 
