@@ -29,6 +29,7 @@ const minRatingInput = document.getElementById('minRating');
 const minRatingValueSpan = document.getElementById('minRatingValue');
 const applyFiltersBtn = document.getElementById('applyFiltersBtn');
 const filterSelection = document.getElementById('filterSelection');
+const themeToggleBtn = document.getElementById('themeToggle');
 
 // ========== STATE MANAGEMENT ==========
 let currentContentList = []; // The list of content currently being displayed/cycled through
@@ -295,6 +296,26 @@ tvShowsBtn.addEventListener('click', () => initializeContent('tv'));
 
 // Initial load when the DOM is ready
 window.addEventListener('DOMContentLoaded', async () => {
+    // Theme toggle logic
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleBtn.querySelector('.emoji').textContent = '🌙'; // Moon emoji for light theme
+    } else {
+        themeToggleBtn.querySelector('.emoji').textContent = '☀️'; // Sun emoji for dark theme
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        if (document.body.classList.contains('light-theme')) {
+            localStorage.setItem('theme', 'light');
+            themeToggleBtn.querySelector('.emoji').textContent = '🌙';
+        } else {
+            localStorage.setItem('theme', 'dark');
+            themeToggleBtn.querySelector('.emoji').textContent = '☀️';
+        }
+    });
+
     minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1); // Set initial rating display
     await initializeContent('movie'); // Load movies by default
 });
