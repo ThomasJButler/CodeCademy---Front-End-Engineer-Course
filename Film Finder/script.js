@@ -60,7 +60,7 @@ const getGenres = async (type) => {
     }
 };
 
-const getMovieTrailer = async (contentId, type) => {
+const getMediaTrailer = async (contentId, type) => {
     const trailerEndpoint = `/${type}/${contentId}/videos`;
     const requestParams = `?api_key=${tmdbKey}`;
     const urlToFetch = `${tmdbBaseUrl}${trailerEndpoint}${requestParams}`;
@@ -251,7 +251,7 @@ dislikeBtn.addEventListener('click', showNextContent);
 
 trailerBtn.addEventListener('click', async () => {
     const content = currentContentList[currentContentIndex];
-    const trailerUrl = await getMovieTrailer(content.id, currentContentType);
+    const trailerUrl = await getMediaTrailer(content.id, currentContentType);
     if (trailerUrl) {
         trailerIframe.src = trailerUrl;
         trailerModal.classList.remove('hidden');
