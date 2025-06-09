@@ -370,6 +370,21 @@ footer {
     font-size: 0.9rem;
 }
 
+footer a {
+    color: var(--text-color); /* Make the link color match the main text color */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make it bold */
+    transition: color 0.3s ease; /* Smooth transition on hover */
+}
+
+footer a:hover {
+    color: var(--primary-color); /* Change color on hover */
+}
+
+footer a {
+    color: var(--text-color);
+}
+
 /* Utility classes */
 .hidden {
     display: none !important;
