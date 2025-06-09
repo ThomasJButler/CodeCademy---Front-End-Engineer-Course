@@ -301,7 +301,7 @@ main {
     margin-bottom: 2.5rem;
     flex-grow: 1;
     overflow-y: auto;
-    max-height: 300px;
+    max-height: 300px; /* Default max height for smaller screens */
     padding-right: 10px;
 }
 
@@ -477,25 +477,42 @@ footer a {
     }
 
     .filter-container {
-        padding: 1.5rem;
+        padding: 1rem; /* Reduced padding */
+        margin-bottom: 1.5rem; /* Reduced margin */
+    }
+
+    .filter-container h2 {
+        font-size: 1.5rem; /* Smaller heading */
+        margin-bottom: 1rem;
     }
 
     .filter-group {
         flex-direction: column;
         gap: 0.5rem;
+        margin-bottom: 0.8rem; /* Reduced margin */
     }
 
     .filter-group label {
+        font-size: 1rem; /* Smaller label font */
         width: 100%;
         text-align: center;
     }
 
     #genres, #minRating {
         width: 90%;
+        padding: 0.5rem; /* Reduced padding */
+        font-size: 0.9rem; /* Smaller font */
     }
 
     #minRatingValue {
+        font-size: 1rem; /* Smaller font */
         margin-top: 0.5rem;
+    }
+
+    #applyFiltersBtn {
+        padding: 0.6rem 1.5rem; /* Reduced padding */
+        font-size: 1rem; /* Smaller font */
+        margin-top: 0.8rem;
     }
 
     .content-type-toggle {
@@ -524,5 +541,51 @@ footer a {
     
     .action-btn {
         width: 100%;
+    }
+}
+
+/* Desktop specific adjustments for single screen view */
+@media (min-width: 769px) {
+    main {
+        padding: 1.5rem; /* Slightly reduced padding for more space */
+    }
+
+    .filter-container {
+        margin-bottom: 1.5rem; /* Reduced margin */
+    }
+
+    .movie-container {
+        gap: 1.5rem; /* Reduced gap */
+        padding: 1.5rem; /* Reduced padding */
+    }
+
+    .movie-poster {
+        width: 250px; /* Slightly smaller poster */
+        height: 375px; /* Maintain aspect ratio */
+    }
+
+    .movie-title {
+        font-size: 2rem; /* Slightly smaller title */
+    }
+
+    .movie-meta {
+        font-size: 0.9rem; /* Slightly smaller meta font */
+        margin-bottom: 1rem;
+    }
+
+    .movie-overview {
+        font-size: 1rem; /* Slightly smaller overview font */
+        line-height: 1.6;
+        max-height: 180px; /* Significantly reduced max height for overview */
+        margin-bottom: 1.5rem; /* Reduced margin */
+    }
+
+    .button-container {
+        gap: 0.8rem; /* Reduced gap */
+    }
+
+    .action-btn {
+        padding: 0.8rem; /* Reduced padding */
+        font-size: 1rem; /* Reduced font size */
     }
 }
