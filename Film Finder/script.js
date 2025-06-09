@@ -1,5 +1,5 @@
-// Film Finder - JavaScript
-// This script handles all the functionality for the movie recommendation app
+// BingeBuddy - JavaScript
+// This script handles all the functionality for the movie and TV show recommendation app
 
 // ========== API CONFIGURATION ==========
 const tmdbKey = '957eb9f35f75e767e2e0f393b293b0a0';
@@ -38,7 +38,7 @@ let likedTvShows = [];
 let currentContentType = 'movie'; // 'movie' or 'tv'
 let allGenres = { movie: [], tv: [] }; // Store genres for both types
 
-// ========== API CONFIGURATION ==========
+// ========== API FUNCTIONS ==========
 const getGenres = async (type) => {
     const genreRequestEndpoint = `/genre/${type}/list`;
     const requestParams = `?api_key=${tmdbKey}`;
@@ -52,14 +52,16 @@ const getGenres = async (type) => {
         } else {
             console.error(`Failed to fetch ${type} genres. Status:`, response.status);
             console.error('Response:', await response.text());
+            return []; // Return empty array on failure
         }
     } catch (error) {
         console.error(`Error fetching ${type} genres:`, error);
+        return []; // Return empty array on error
     }
 };
 
-const getMovieTrailer = async (movieId) => {
-    const trailerEndpoint = `/movie/${movieId}/videos`;
+const getMovieTrailer = async (contentId, type) => {
+    const trailerEndpoint = `/${type}/${contentId}/videos`;
     const requestParams = `?api_key=${tmdbKey}`;
     const urlToFetch = `${tmdbBaseUrl}${trailerEndpoint}${requestParams}`;
 
@@ -70,15 +72,20 @@ const getMovieTrailer = async (movieId) => {
             const trailers = jsonResponse.results;
             const officialTrailer = trailers.find(trailer => trailer.type === 'Trailer' && trailer.site === 'YouTube');
             return officialTrailer ? `https://www.youtube.com/embed/${officialTrailer.key}` : '';
+        } else {
+            console.error(`Failed to fetch ${type} trailer. Status:`, response.status);
+            console.error('Response:', await response.text());
+            return '';
         }
     } catch (error) {
         console.error('Error fetching movie trailer:', error);
+        return '';
     }
 };
 
 const getFilteredContent = async (type, genreId, minRating) => {
     let endpoint = `/discover/${type}`;
-    let requestParams = `?api_key=${tmdbKey}&vote_count.gte=100`; // Ensure a minimum number of votes
+    let requestParams = `?api_key=${tmdbKey}&vote_count.gte=100`; // Ensure a minimum number of votes for reliable ratings
 
     if (genreId) {
         requestParams += `&with_genres=${genreId}`;
@@ -86,6 +93,9 @@ const getFilteredContent = async (type, genreId, minRating) => {
     if (minRating > 0) {
         requestParams += `&vote_average.gte=${minRating}`;
     }
+    
+    // Add sorting for better randomization with filters
+    requestParams += `&sort_by=popularity.desc`; // Start with popular, then randomize client-side
 
     const urlToFetch = `${tmdbBaseUrl}${endpoint}${requestParams}`;
 
@@ -94,9 +104,14 @@ const getFilteredContent = async (type, genreId, minRating) => {
         if (response.ok) {
             const jsonResponse = await response.json();
             return jsonResponse.results;
+        } else {
+            console.error(`Failed to fetch filtered ${type} content. Status:`, response.status);
+            console.error('Response:', await response.text());
+            return [];
         }
     } catch (error) {
         console.error(`Error fetching filtered ${type} content:`, error);
+        return [];
     }
 };
 
@@ -118,22 +133,89 @@ const displayContent = (contentData) => {
 
 const showNextContent = () => {
     if (trendingContent.length > 0) {
-        currentContentIndex = (currentContentIndex + 1) % trendingContent.length;
+        const randomIndex = Math.floor(Math.random() * trendingContent.length); // Randomize
+        currentContentIndex = randomIndex;
         const content = trendingContent[currentContentIndex];
         displayContent(content);
+    } else {
+        movieInfo.classList.add('hidden');
+        alert('No content found with the current filters. Please adjust your selections.');
     }
 };
 
 const renderLikedList = (list, element) => {
     element.innerHTML = '';
-    list.forEach(item => {
+    if (list.length === 0) {
         const li = document.createElement('li');
-        li.textContent = item.title || item.name;
+        li.textContent = 'No liked items yet.';
         element.appendChild(li);
+    } else {
+        list.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item.title || item.name;
+            element.appendChild(li);
+        });
+    }
+};
+
+// ========== HELPER FUNCTIONS ==========
+const populateGenreDropdown = (genres) => {
+    genreSelectElement.innerHTML = '<option value="" selected>All Genres</option>'; // Reset and add default
+    genres.forEach(genre => {
+        const option = document.createElement('option');
+        option.value = genre.id;
+        option.textContent = genre.name;
+        genreSelectElement.appendChild(option);
     });
 };
 
-// ========== EVENT LISTENERS ==========
+// ========== INITIALISATION & EVENT HANDLERS ==========
+const loadContent = async (type) => {
+    currentContentType = type;
+
+    // Fetch and populate genres for the current type
+    const genres = await getGenres(type);
+    if (genres) {
+        allGenres[type] = genres;
+        populateGenreDropdown(genres);
+    }
+
+    // Apply current filters
+    const selectedGenreId = genreSelectElement.value;
+    const minRating = parseFloat(minRatingInput.value);
+
+    trendingContent = await getFilteredContent(type, selectedGenreId, minRating);
+    
+    // Randomize the initial display
+    if (trendingContent.length > 0) {
+        currentContentIndex = Math.floor(Math.random() * trendingContent.length);
+        displayContent(trendingContent[currentContentIndex]);
+        movieInfo.classList.remove('hidden');
+        filterSelection.classList.remove('hidden'); // Ensure filter section is visible
+        console.log(`App ready! Showing trending ${type}s.`);
+    } else {
+        movieInfo.classList.add('hidden'); // Hide movie info if no content
+        console.error(`Failed to load trending ${type}s or no content found with current filters`);
+        alert(`Failed to load trending ${type}s or no content found with current filters. Please check your internet connection or adjust filters.`);
+    }
+
+    // Update liked lists visibility
+    if (type === 'movie') {
+        likedMoviesSection.classList.remove('hidden');
+        likedTvShowsSection.classList.add('hidden');
+        renderLikedList(likedMovies, likedMoviesList);
+    } else {
+        likedMoviesSection.classList.add('hidden');
+        likedTvShowsSection.classList.remove('hidden');
+        renderLikedList(likedTvShows, likedTvShowsList);
+    }
+
+    // Update active toggle button
+    moviesBtn.classList.toggle('active', type === 'movie');
+    tvShowsBtn.classList.toggle('active', type === 'tv');
+};
+
+// Event Listeners
 likeBtn.addEventListener('click', () => {
     const content = trendingContent[currentContentIndex];
     if (currentContentType === 'movie') {
@@ -149,11 +231,12 @@ likeBtn.addEventListener('click', () => {
     }
     showNextContent();
 });
+
 dislikeBtn.addEventListener('click', showNextContent);
 
 trailerBtn.addEventListener('click', async () => {
     const content = trendingContent[currentContentIndex];
-    const trailerUrl = await getMovieTrailer(content.id);
+    const trailerUrl = await getMovieTrailer(content.id, currentContentType);
     if (trailerUrl) {
         trailerIframe.src = trailerUrl;
         trailerModal.classList.remove('hidden');
@@ -174,63 +257,6 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// ========== HELPER FUNCTIONS ==========
-const populateGenreDropdown = (genres) => {
-    genreSelectElement.innerHTML = '<option value="" selected>All Genres</option>'; // Reset and add default
-    genres.forEach(genre => {
-        const option = document.createElement('option');
-        option.value = genre.id;
-        option.textContent = genre.name;
-        genreSelectElement.appendChild(option);
-    });
-};
-
-// ========== INITIALISATION ==========
-const loadContent = async (type) => {
-    currentContentType = type;
-
-    // Fetch and populate genres for the current type
-    const genres = await getGenres(type);
-    if (genres) {
-        allGenres[type] = genres;
-        populateGenreDropdown(genres);
-    }
-
-    // Apply current filters
-    const selectedGenreId = genreSelectElement.value;
-    const minRating = parseFloat(minRatingInput.value);
-
-    trendingContent = await getFilteredContent(type, selectedGenreId, minRating);
-    currentContentIndex = 0; // Reset index when changing content type or filters
-
-    if (trendingContent && trendingContent.length > 0) {
-        displayContent(trendingContent[currentContentIndex]);
-        movieInfo.classList.remove('hidden');
-        filterSelection.classList.remove('hidden'); // Ensure filter section is visible
-        console.log(`App ready! Showing trending ${type}s.`);
-    } else {
-        movieInfo.classList.add('hidden'); // Hide movie info if no content
-        console.error(`Failed to load trending ${type}s or no content found with current filters`);
-        alert(`Failed to load trending ${type}s or no content found with current filters. Please check your internet connection or adjust filters.`);
-    }
-
-    // Update liked lists visibility
-    if (type === 'movie') {
-        likedMoviesSection.classList.remove('hidden');
-        likedTvShowsSection.classList.add('hidden');
-    } else {
-        likedMoviesSection.classList.add('hidden');
-        likedTvShowsSection.classList.remove('hidden');
-    }
-
-    // Update active toggle button
-    moviesBtn.classList.toggle('active', type === 'movie');
-    tvShowsBtn.classList.toggle('active', type === 'tv');
-};
-
-moviesBtn.addEventListener('click', () => loadContent('movie'));
-tvShowsBtn.addEventListener('click', () => loadContent('tv'));
-
 minRatingInput.addEventListener('input', () => {
     minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1);
 });
@@ -239,8 +265,10 @@ applyFiltersBtn.addEventListener('click', () => {
     loadContent(currentContentType); // Reload content with new filters
 });
 
-window.addEventListener('DOMContentLoaded', async () => {
-    console.log('Initialising Film Finder...');
-    minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1); // Set initial rating display
-    await loadContent('movie'); // Load movies by default
-});
+moviesBtn.addEventListener('click', () => loadContent('movie'));
+tvShowsBtn.addEventListener('click', () => loadContent('tv'));
+
+// Initial load
+console.log('Initialising BingeBuddy...');
+minRatingValueSpan.textContent = parseFloat(minRatingInput.value).toFixed(1); // Set initial rating display
+loadContent('movie'); // Load movies by default
