@@ -1,6 +1,6 @@
-# 🎬 Film Finder
+# 🎬 BingeBuddy
 
-Film Finder is a dynamic web application that allows users to discover trending movies and TV shows, filter content by genre and minimum rating, watch trailers, and keep track of their liked content.
+BingeBuddy is a dynamic web application that allows users to discover trending movies and TV shows, filter content by genre and minimum rating, watch trailers, and keep track of their liked content.
 
 ## ✨ Features
 
