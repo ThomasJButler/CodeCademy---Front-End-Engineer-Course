@@ -2,234 +2,140 @@
 // This script handles all the functionality for the movie recommendation app
 
 // ========== API CONFIGURATION ==========
-// Task 1: Save your TMDB API key
 const tmdbKey = '957eb9f35f75e767e2e0f393b293b0a0';
-
-// Task 2: Save the TMDB base URL
 const tmdbBaseUrl = 'https://api.themoviedb.org/3';
 
 // ========== DOM ELEMENTS ==========
-// Get references to all the HTML elements we'll need to manipulate
-const genreSelectElement = document.getElementById('genres');
-const playBtn = document.getElementById('playBtn');
 const movieInfo = document.getElementById('movieInfo');
 const moviePoster = document.getElementById('moviePoster');
 const movieTitle = document.getElementById('movieTitle');
+const movieReleaseDate = document.getElementById('movieReleaseDate');
+const movieRating = document.getElementById('movieRating');
 const movieOverview = document.getElementById('movieOverview');
 const likeBtn = document.getElementById('likeBtn');
 const dislikeBtn = document.getElementById('dislikeBtn');
-const genreSelection = document.getElementById('genreSelection');
+const trailerBtn = document.getElementById('trailerBtn');
+const trailerModal = document.getElementById('trailerModal');
+const trailerIframe = document.getElementById('trailerIframe');
+const closeBtn = document.querySelector('.close-btn');
+const likedMoviesList = document.getElementById('likedMoviesList');
 
-// ========== GENRE FUNCTIONS ==========
-// Task 3-12: Fetch genres from TMDB API
-const getGenres = async () => {
-    // Task 3: Create the genres endpoint
-    const genreRequestEndpoint = '/genre/movie/list';
-    
-    // Task 4: Create query parameters with our API key
-    const requestParams = `?api_key=${tmdbKey}`;
-    
-    // Task 5: Combine everything into the full URL
-    const urlToFetch = `${tmdbBaseUrl}${genreRequestEndpoint}${requestParams}`;
-    
-    // Task 7: Add try/catch for error handling
-    try {
-        // Task 8: Fetch data from the API
-        const response = await fetch(urlToFetch);
-        
-        // Task 9: Check if the response is successful
-        if (response.ok) {
-            // Task 10: Convert response to JSON
-            const jsonResponse = await response.json();
-            
-            // Task 11: Extract genres array from the response
-            const genres = jsonResponse.genres;
-            console.log('Genres fetched:', genres); // For learning: see what we got
-            
-            // Task 12: Return the genres
-            return genres;
-        } else {
-            console.error('Failed to fetch genres. Status:', response.status);
-            console.error('Response:', await response.text());
-        }
-    } catch (error) {
-        // Task 7: Log any errors
-        console.error('Error fetching genres:', error);
-    }
-};
+// ========== STATE MANAGEMENT ==========
+let trendingMovies = [];
+let currentMovieIndex = 0;
+let likedMovies = [];
 
 // ========== MOVIE FETCHING FUNCTIONS ==========
-// Task 13-17: Fetch movies based on selected genre
-const getMovies = async () => {
-    // Get the selected genre from our dropdown
-    const selectedGenre = getSelectedGenre();
-    
-    // Task 13: Create the discover movie endpoint
-    const discoverMovieEndpoint = '/discover/movie';
-    
-    // Task 14: Create query parameters with API key and selected genre
-    const requestParams = `?api_key=${tmdbKey}&with_genres=${selectedGenre}`;
-    
-    // Combine into full URL
-    const urlToFetch = `${tmdbBaseUrl}${discoverMovieEndpoint}${requestParams}`;
-    
-    // Task 15: Make function async and add try/catch
+const getMovieTrailer = async (movieId) => {
+    const trailerEndpoint = `/movie/${movieId}/videos`;
+    const requestParams = `?api_key=${tmdbKey}`;
+    const urlToFetch = `${tmdbBaseUrl}${trailerEndpoint}${requestParams}`;
+
     try {
-        // Fetch movies from the API
         const response = await fetch(urlToFetch);
-        
-        // Task 16: Check if response is successful
         if (response.ok) {
-            // Convert to JSON
             const jsonResponse = await response.json();
-            console.log('Movies response:', jsonResponse); // For learning
-            
-            // Task 17: Extract movies array and return it
-            const movies = jsonResponse.results;
-            console.log('Movies found:', movies.length); // For learning
-            return movies;
+            const trailers = jsonResponse.results;
+            const officialTrailer = trailers.find(trailer => trailer.type === 'Trailer' && trailer.site === 'YouTube');
+            return officialTrailer ? `https://www.youtube.com/embed/${officialTrailer.key}` : '';
         }
     } catch (error) {
-        console.error('Error fetching movies:', error);
+        console.error('Error fetching movie trailer:', error);
     }
 };
 
-// Task 18-23: Get detailed information about a specific movie
-const getMovieInfo = async (movie) => {
-    // Task 18: Extract movie ID from the movie object
-    const movieId = movie.id;
-    
-    // Task 19: Create the movie details endpoint
-    const movieEndpoint = `/movie/${movieId}`;
-    
-    // Task 20: Create query parameters and URL
+const getTrendingMovies = async () => {
+    const trendingEndpoint = '/trending/movie/week';
     const requestParams = `?api_key=${tmdbKey}`;
-    const urlToFetch = `${tmdbBaseUrl}${movieEndpoint}${requestParams}`;
-    
-    // Task 21: Make async and add try/catch
+    const urlToFetch = `${tmdbBaseUrl}${trendingEndpoint}${requestParams}`;
+
     try {
-        // Fetch movie details
         const response = await fetch(urlToFetch);
-        
-        // Task 22: Check if response is successful
         if (response.ok) {
-            // Convert to JSON
-            const movieInfo = await response.json();
-            console.log('Movie info:', movieInfo); // For learning
-            
-            // Task 23: Return the movie info
-            return movieInfo;
+            const jsonResponse = await response.json();
+            return jsonResponse.results;
         }
     } catch (error) {
-        console.error('Error fetching movie info:', error);
+        console.error('Error fetching trending movies:', error);
     }
 };
 
 // ========== DISPLAY FUNCTIONS ==========
-// Task 24-27: Main function to show a random movie
-const showRandomMovie = async () => {
-    // Task 24: Get all movies for the selected genre
-    const movies = await getMovies();
-    
-    // Task 25: Pick a random movie from the list
-    const randomMovie = getRandomMovie(movies);
-    
-    // Task 26: Get detailed info about the random movie
-    const info = await getMovieInfo(randomMovie);
-    
-    // Task 27: Display the movie on the page
-    displayMovie(info);
-};
-
-// ========== HELPER FUNCTIONS ==========
-// Get the selected genre from the dropdown
-const getSelectedGenre = () => {
-    const selectedGenre = genreSelectElement.value;
-    return selectedGenre;
-};
-
-// Get a random movie from the movies array
-const getRandomMovie = (movies) => {
-    const randomIndex = Math.floor(Math.random() * movies.length);
-    return movies[randomIndex];
-};
-
-// Display movie information on the page
 const displayMovie = (movieData) => {
-    // Hide genre selection and show movie info
-    genreSelection.classList.add('hidden');
     movieInfo.classList.remove('hidden');
-    
-    // Set movie poster
+
     const posterPath = movieData.poster_path;
-    const posterUrl = posterPath 
+    const posterUrl = posterPath
         ? `https://image.tmdb.org/t/p/w500${posterPath}`
         : 'https://via.placeholder.com/300x450?text=No+Poster';
     moviePoster.style.backgroundImage = `url(${posterUrl})`;
-    
-    // Set movie title and overview
+
     movieTitle.textContent = movieData.title;
+    movieReleaseDate.textContent = `Released: ${movieData.release_date}`;
+    movieRating.textContent = `Rating: ${movieData.vote_average.toFixed(1)} / 10`;
     movieOverview.textContent = movieData.overview || 'No overview available.';
 };
 
-// Clear the current movie from the screen
-const clearCurrentMovie = () => {
-    // Clear movie details
-    moviePoster.style.backgroundImage = '';
-    movieTitle.textContent = '';
-    movieOverview.textContent = '';
+const showNextMovie = () => {
+    if (trendingMovies.length > 0) {
+        currentMovieIndex = (currentMovieIndex + 1) % trendingMovies.length;
+        const movie = trendingMovies[currentMovieIndex];
+        displayMovie(movie);
+    }
 };
 
-// Handle liking a movie
-const likeMovie = () => {
-    clearCurrentMovie();
-    showRandomMovie();
-};
-
-// Handle disliking a movie
-const dislikeMovie = () => {
-    clearCurrentMovie();
-    showRandomMovie();
-};
-
-// Populate the genre dropdown with options
-const populateGenreDropdown = (genres) => {
-    genres.forEach(genre => {
-        const option = document.createElement('option');
-        option.value = genre.id;
-        option.textContent = genre.name;
-        genreSelectElement.appendChild(option);
+const renderLikedMovies = () => {
+    likedMoviesList.innerHTML = '';
+    likedMovies.forEach(movie => {
+        const li = document.createElement('li');
+        li.textContent = movie.title;
+        likedMoviesList.appendChild(li);
     });
 };
 
 // ========== EVENT LISTENERS ==========
-// When play button is clicked
-playBtn.addEventListener('click', () => {
-    const selectedGenre = getSelectedGenre();
-    if (selectedGenre) {
-        showRandomMovie();
+likeBtn.addEventListener('click', () => {
+    const movie = trendingMovies[currentMovieIndex];
+    if (!likedMovies.find(likedMovie => likedMovie.id === movie.id)) {
+        likedMovies.push(movie);
+        renderLikedMovies();
+    }
+    showNextMovie();
+});
+dislikeBtn.addEventListener('click', showNextMovie);
+
+trailerBtn.addEventListener('click', async () => {
+    const movie = trendingMovies[currentMovieIndex];
+    const trailerUrl = await getMovieTrailer(movie.id);
+    if (trailerUrl) {
+        trailerIframe.src = trailerUrl;
+        trailerModal.classList.remove('hidden');
     } else {
-        alert('Please select a genre first!');
+        alert('No trailer available for this movie.');
     }
 });
 
-// When like button is clicked
-likeBtn.addEventListener('click', likeMovie);
+closeBtn.addEventListener('click', () => {
+    trailerModal.classList.add('hidden');
+    trailerIframe.src = ''; // Stop video playback
+});
 
-// When dislike button is clicked
-dislikeBtn.addEventListener('click', dislikeMovie);
+window.addEventListener('click', (event) => {
+    if (event.target === trailerModal) {
+        trailerModal.classList.add('hidden');
+        trailerIframe.src = ''; // Stop video playback
+    }
+});
 
 // ========== INITIALISATION ==========
-// When the page loads, fetch and populate genres
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('Initialising Film Finder...');
-    const genres = await getGenres();
-    if (genres && genres.length > 0) {
-        populateGenreDropdown(genres);
-        console.log('App ready! Select a genre and click "Let\'s Play!"');
-        console.log(`Loaded ${genres.length} genres:`, genres.map(g => g.name).join(', '));
+    trendingMovies = await getTrendingMovies();
+    if (trendingMovies && trendingMovies.length > 0) {
+        displayMovie(trendingMovies[currentMovieIndex]);
+        console.log('App ready! Showing trending movies.');
     } else {
-        console.error('Failed to load genres');
-        alert('Failed to load movie genres. Please check your internet connection and refresh the page.');
+        console.error('Failed to load trending movies');
+        alert('Failed to load trending movies. Please check your internet connection and refresh the page.');
     }
 });

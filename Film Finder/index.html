@@ -13,15 +13,6 @@
     </header>
 
     <main>
-        <!-- Genre Selection Section -->
-        <section id="genreSelection" class="selection-container">
-            <h2>Select a Genre</h2>
-            <select id="genres" name="genres">
-                <option value="" disabled selected>Choose a genre...</option>
-            </select>
-            <button id="playBtn">Let's Play!</button>
-        </section>
-
         <!-- Movie Display Section -->
         <section id="movieInfo" class="movie-container hidden">
             <!-- Movie poster -->
@@ -30,10 +21,17 @@
             <!-- Movie details -->
             <div class="movie-details">
                 <h2 id="movieTitle" class="movie-title"></h2>
+                <div id="movieDetails" class="movie-meta">
+                    <span id="movieReleaseDate"></span>
+                    <span id="movieRating"></span>
+                </div>
                 <p id="movieOverview" class="movie-overview"></p>
                 
                 <!-- Like/Dislike buttons -->
                 <div class="button-container">
+                    <button id="trailerBtn" class="action-btn trailer-btn">
+                        <span class="emoji">▶️</span> Watch Trailer
+                    </button>
                     <button id="likeBtn" class="action-btn like-btn">
                         <span class="emoji">👍</span> Like
                     </button>
@@ -42,6 +40,19 @@
                     </button>
                 </div>
             </div>
+        </section>
+
+        <!-- Trailer Modal -->
+        <div id="trailerModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <iframe id="trailerIframe" width="560" height="315" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <section id="likedMovies" class="liked-movies-container">
+            <h2>Liked Movies</h2>
+            <ul id="likedMoviesList"></ul>
         </section>
     </main>
 
