@@ -9,7 +9,11 @@
 <body>
     <header>
         <h1>🎬 Film Finder</h1>
-        <p>Discover your next favourite film!</p>
+        <p>Discover your next favourite film or TV show!</p>
+        <div class="content-type-toggle">
+            <button id="moviesBtn" class="toggle-btn active">Movies</button>
+            <button id="tvShowsBtn" class="toggle-btn">TV Shows</button>
+        </div>
     </header>
 
     <main>
@@ -53,6 +57,11 @@
         <section id="likedMovies" class="liked-movies-container">
             <h2>Liked Movies</h2>
             <ul id="likedMoviesList"></ul>
+        </section>
+
+        <section id="likedTvShows" class="liked-movies-container hidden">
+            <h2>Liked TV Shows</h2>
+            <ul id="likedTvShowsList"></ul>
         </section>
     </main>
 

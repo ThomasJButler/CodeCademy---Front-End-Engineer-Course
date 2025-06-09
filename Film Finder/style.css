@@ -6,12 +6,13 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif; /* Changed font for a modern feel */
     background-color: #0a0a0a;
     color: #ffffff;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    line-height: 1.6; /* Improved readability */
 }
 
 /* Header styles */
@@ -23,14 +24,51 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 3rem; /* Slightly larger for impact */
+    margin-bottom: 0.75rem;
     color: #e50914; /* Netflix red */
+    letter-spacing: 1px; /* A bit of spacing for style */
 }
 
 header p {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: #cccccc;
+    font-weight: 300; /* Lighter weight for subtitle */
+    margin-bottom: 1.5rem; /* Added space below subtitle */
+}
+
+.content-type-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.toggle-btn {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #555555;
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+    background-color: #444444;
+    border-color: #e50914;
+}
+
+.toggle-btn.active {
+    background-color: #e50914;
+    border-color: #e50914;
+    font-weight: bold;
+}
+
+.toggle-btn.active:hover {
+    background-color: #cc0812;
+    border-color: #cc0812;
 }
 
 /* Main content area */
@@ -71,27 +109,30 @@ main {
 }
 
 .movie-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+    font-size: 2.2rem; /* Slightly larger */
+    margin-bottom: 0.8rem; /* Adjusted spacing */
     color: #ffffff;
 }
 
 .movie-meta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
-    color: #cccccc;
-    margin-bottom: 1rem;
+    font-size: 0.95rem; /* Slightly larger */
+    color: #b0b0b0; /* Slightly lighter color */
+    margin-bottom: 1.5rem; /* Increased spacing */
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #333; /* Subtle separator */
 }
 
 .movie-overview {
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 1.05rem; /* Slightly larger */
+    line-height: 1.7; /* Improved line height */
     color: #cccccc;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem; /* Increased spacing */
     flex-grow: 1;
     overflow-y: auto;
-    max-height: 300px;
+    max-height: 300px; /* Keep max height */
+    padding-right: 10px; /* Prevent scrollbar from overlapping text */
 }
 
 /* Button styles */
@@ -237,12 +278,27 @@ footer {
     border-radius: 5px;
     margin-bottom: 0.5rem;
     color: #cccccc;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+#likedMoviesList li:hover {
+    background-color: #3a3a3a; /* Darker on hover */
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
     header h1 {
         font-size: 2rem;
+    }
+
+    .content-type-toggle {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .toggle-btn {
+        width: 80%;
+        margin: 0 auto;
     }
     
     .movie-container {

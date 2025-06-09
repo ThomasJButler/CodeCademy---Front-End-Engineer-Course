@@ -19,11 +19,18 @@ const trailerModal = document.getElementById('trailerModal');
 const trailerIframe = document.getElementById('trailerIframe');
 const closeBtn = document.querySelector('.close-btn');
 const likedMoviesList = document.getElementById('likedMoviesList');
+const likedTvShowsList = document.getElementById('likedTvShowsList');
+const moviesBtn = document.getElementById('moviesBtn');
+const tvShowsBtn = document.getElementById('tvShowsBtn');
+const likedMoviesSection = document.getElementById('likedMovies');
+const likedTvShowsSection = document.getElementById('likedTvShows');
 
 // ========== STATE MANAGEMENT ==========
-let trendingMovies = [];
-let currentMovieIndex = 0;
+let trendingContent = []; // Will hold either movies or TV shows
+let currentContentIndex = 0;
 let likedMovies = [];
+let likedTvShows = [];
+let currentContentType = 'movie'; // 'movie' or 'tv'
 
 // ========== MOVIE FETCHING FUNCTIONS ==========
 const getMovieTrailer = async (movieId) => {
@@ -44,8 +51,8 @@ const getMovieTrailer = async (movieId) => {
     }
 };
 
-const getTrendingMovies = async () => {
-    const trendingEndpoint = '/trending/movie/week';
+const getTrendingContent = async (type) => {
+    const trendingEndpoint = `/trending/${type}/week`;
     const requestParams = `?api_key=${tmdbKey}`;
     const urlToFetch = `${tmdbBaseUrl}${trendingEndpoint}${requestParams}`;
 
@@ -56,53 +63,60 @@ const getTrendingMovies = async () => {
             return jsonResponse.results;
         }
     } catch (error) {
-        console.error('Error fetching trending movies:', error);
+        console.error(`Error fetching trending ${type}:`, error);
     }
 };
 
 // ========== DISPLAY FUNCTIONS ==========
-const displayMovie = (movieData) => {
+const displayContent = (contentData) => {
     movieInfo.classList.remove('hidden');
 
-    const posterPath = movieData.poster_path;
+    const posterPath = contentData.poster_path;
     const posterUrl = posterPath
         ? `https://image.tmdb.org/t/p/w500${posterPath}`
         : 'https://via.placeholder.com/300x450?text=No+Poster';
     moviePoster.style.backgroundImage = `url(${posterUrl})`;
 
-    movieTitle.textContent = movieData.title;
-    movieReleaseDate.textContent = `Released: ${movieData.release_date}`;
-    movieRating.textContent = `Rating: ${movieData.vote_average.toFixed(1)} / 10`;
-    movieOverview.textContent = movieData.overview || 'No overview available.';
+    movieTitle.textContent = contentData.title || contentData.name;
+    movieReleaseDate.textContent = `Released: ${contentData.release_date || contentData.first_air_date || 'N/A'}`;
+    movieRating.textContent = `Rating: ${contentData.vote_average ? contentData.vote_average.toFixed(1) : 'N/A'} / 10`;
+    movieOverview.textContent = contentData.overview || 'No overview available.';
 };
 
-const showNextMovie = () => {
-    if (trendingMovies.length > 0) {
-        currentMovieIndex = (currentMovieIndex + 1) % trendingMovies.length;
-        const movie = trendingMovies[currentMovieIndex];
-        displayMovie(movie);
+const showNextContent = () => {
+    if (trendingContent.length > 0) {
+        currentContentIndex = (currentContentIndex + 1) % trendingContent.length;
+        const content = trendingContent[currentContentIndex];
+        displayContent(content);
     }
 };
 
-const renderLikedMovies = () => {
-    likedMoviesList.innerHTML = '';
-    likedMovies.forEach(movie => {
+const renderLikedList = (list, element) => {
+    element.innerHTML = '';
+    list.forEach(item => {
         const li = document.createElement('li');
-        li.textContent = movie.title;
-        likedMoviesList.appendChild(li);
+        li.textContent = item.title || item.name;
+        element.appendChild(li);
     });
 };
 
 // ========== EVENT LISTENERS ==========
 likeBtn.addEventListener('click', () => {
-    const movie = trendingMovies[currentMovieIndex];
-    if (!likedMovies.find(likedMovie => likedMovie.id === movie.id)) {
-        likedMovies.push(movie);
-        renderLikedMovies();
+    const content = trendingContent[currentContentIndex];
+    if (currentContentType === 'movie') {
+        if (!likedMovies.find(likedItem => likedItem.id === content.id)) {
+            likedMovies.push(content);
+            renderLikedList(likedMovies, likedMoviesList);
+        }
+    } else { // currentContentType === 'tv'
+        if (!likedTvShows.find(likedItem => likedItem.id === content.id)) {
+            likedTvShows.push(content);
+            renderLikedList(likedTvShows, likedTvShowsList);
+        }
     }
-    showNextMovie();
+    showNextContent();
 });
-dislikeBtn.addEventListener('click', showNextMovie);
+dislikeBtn.addEventListener('click', showNextContent);
 
 trailerBtn.addEventListener('click', async () => {
     const movie = trendingMovies[currentMovieIndex];
@@ -128,14 +142,37 @@ window.addEventListener('click', (event) => {
 });
 
 // ========== INITIALISATION ==========
+const loadContent = async (type) => {
+    currentContentType = type;
+    trendingContent = await getTrendingContent(type);
+    currentContentIndex = 0; // Reset index when changing content type
+
+    if (trendingContent && trendingContent.length > 0) {
+        displayContent(trendingContent[currentContentIndex]);
+        console.log(`App ready! Showing trending ${type}s.`);
+    } else {
+        console.error(`Failed to load trending ${type}s`);
+        alert(`Failed to load trending ${type}s. Please check your internet connection and refresh the page.`);
+    }
+
+    // Update liked lists visibility
+    if (type === 'movie') {
+        likedMoviesSection.classList.remove('hidden');
+        likedTvShowsSection.classList.add('hidden');
+    } else {
+        likedMoviesSection.classList.add('hidden');
+        likedTvShowsSection.classList.remove('hidden');
+    }
+
+    // Update active toggle button
+    moviesBtn.classList.toggle('active', type === 'movie');
+    tvShowsBtn.classList.toggle('active', type === 'tv');
+};
+
+moviesBtn.addEventListener('click', () => loadContent('movie'));
+tvShowsBtn.addEventListener('click', () => loadContent('tv'));
+
 window.addEventListener('DOMContentLoaded', async () => {
     console.log('Initialising Film Finder...');
-    trendingMovies = await getTrendingMovies();
-    if (trendingMovies && trendingMovies.length > 0) {
-        displayMovie(trendingMovies[currentMovieIndex]);
-        console.log('App ready! Showing trending movies.');
-    } else {
-        console.error('Failed to load trending movies');
-        alert('Failed to load trending movies. Please check your internet connection and refresh the page.');
-    }
+    await loadContent('movie'); // Load movies by default
 });
